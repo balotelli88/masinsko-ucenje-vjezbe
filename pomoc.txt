@@ -3,3 +3,301 @@ df[numericke.columns] = StandardScaler().fit_transform(numericke)
 
 df["kolona"].fillna(df["kolona"].mode()[0])
 #najcesca vrednost
+
+
+📊 Skewness i Kurtosis – šta su i zašto su bitni?
+🔶 1. Skewness (asimetrija)
+📌 Definicija:
+Skewness meri asimetriju distribucije – da li je "rep" distribucije duži na levoj ili desnoj strani.
+
+📐 Matematički:
+Skewness
+=
+1
+𝑛
+∑
+(
+𝑥
+𝑖
+−
+𝑥
+ˉ
+𝜎
+)
+3
+Skewness= 
+n
+1
+​
+ ∑( 
+σ
+x 
+i
+​
+ − 
+x
+ˉ
+ 
+​
+ ) 
+3
+ 
+🧠 Interpretacija:
+Vrednost	Značenje
+0	Simetrična distribucija (npr. normalna)
+> 0 (pozitivna)	Desno repata – rep ide ka većim vrednostima
+< 0 (negativna)	Levo repata – rep ide ka manjim vrednostima
+
+🔎 Visoka asimetrija može ukazivati na potrebu za transformacijom podataka (log, sqrt, Box-Cox...).
+
+🔷 2. Kurtosis (šiljatost)
+📌 Definicija:
+Kurtosis meri koliko je distribucija "šiljata" u odnosu na normalnu.
+
+📐 Matematički:
+Kurtosis
+=
+1
+𝑛
+∑
+(
+𝑥
+𝑖
+−
+𝑥
+ˉ
+𝜎
+)
+4
+Kurtosis= 
+n
+1
+​
+ ∑( 
+σ
+x 
+i
+​
+ − 
+x
+ˉ
+ 
+​
+ ) 
+4
+ 
+U praksi se koristi "excess kurtosis":
+
+Excess kurtosis
+=
+Kurtosis
+−
+3
+Excess kurtosis=Kurtosis−3
+🧠 Interpretacija:
+Excess kurtosis	Značenje
+0	Normalna raspodela (mesokurtic)
+> 0	Višak u centru i repovima (leptokurtic – šiljasta)
+< 0	Ravna distribucija (platykurtic – tupa, sa manje outliera)
+
+🔎 Visok kurtosis znači: puno ekstremnih vrednosti (outliera).
+🔎 Nizak kurtosis: podaci su "ravniji", manje ekstremnih vrednosti.
+
+📈 Vizuelni primeri:
+Skewness:
+
+➡️ Pozitivna: 👇 rep na desno
+
+⬅️ Negativna: 👇 rep na levo
+
+Kurtosis:
+
+🔼 Visok: jako šiljata, mnogo outliera
+
+🔽 Nizak: ravna, "dosadna" raspodela
+
+✅ Kada ih gledati?
+Situacija	Zašto gledaš skew/kurtosis?
+Pre standardizacije / normalizacije	Da proveriš da li ti treba transformacija
+Pre linearnog modela (regresija)	Linearna regresija voli simetrične podatke
+Za otkrivanje outliera	Kurtosis brzo ukaže na distribuciju sa outlierima
+U EDA (analiza)	Da oceniš oblik raspodele
+
+🧪 Primer u Pythonu:
+python
+Copy
+Edit
+from scipy.stats import skew, kurtosis
+
+print("Skew:", skew(df["kolona"]))
+print("Kurtosis:", kurtosis(df["kolona"]))  # Excess kurtosis
+
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+
+# Histogram + KDE
+sns.histplot(data, kde=True)
+
+# Boxplot
+sns.boxplot(x=data)
+
+# Violin plot
+sns.violinplot(x=data)
+
+# QQ plot
+stats.probplot(data, dist="norm", plot=plt)
+
+
+📊 PANDAS PLOTOVI – PREGLED VRSTA, NAMENE I PARAMETARA
+======================================================
+
+📌 Svi pandas grafici koriste:  DataFrame.plot(kind="...", **parametri**)
+Može i direktno: df["kolona"].plot(kind="...")
+
+------------------------------------------------------
+
+1. LINE PLOT – kind='line'
+---------------------------
+✔️ Vremenske serije, trendovi, kontinuirane promene
+✔️ Idealno za npr. rast cene, prodaju po danima
+
+🔧 Parametri:
+- x, y: kolone za ose
+- title: naslov
+- xlabel, ylabel
+- style: tip linije ('-', '--', 'o')
+- grid=True
+- figsize=(w,h)
+- legend=True
+
+------------------------------------------------------
+
+2. BAR PLOT – kind='bar'
+-------------------------
+✔️ Kategorijska poređenja (po grupama)
+✔️ Npr: broj korisnika po regionu
+
+🔧 Parametri:
+- x: kategorija
+- y: broj/vrednost
+- color='red'
+- rot: rotacija oznaka (npr. rot=45)
+
+------------------------------------------------------
+
+3. HORIZONTAL BAR PLOT – kind='barh'
+------------------------------------
+✔️ Isto kao bar, ali horizontalno
+✔️ Korisno kada su nazivi kategorija dugački
+
+------------------------------------------------------
+
+4. PIE CHART – kind='pie'
+--------------------------
+✔️ Udeo delova u celini
+✔️ Npr: udeo platformi, procenat učesnika
+
+🔧 Parametri:
+- autopct='%1.1f%%'  (prikaz procenata)
+- startangle=90
+- legend=True
+- ylabel=''  (da ukloni labelu na osi)
+
+✔️ Radi samo za jednu kolonu!
+
+------------------------------------------------------
+
+5. HISTOGRAM – kind='hist'
+---------------------------
+✔️ Distribucija učestalosti (frekvencija vrednosti)
+✔️ Npr: raspodela godina, plata
+
+🔧 Parametri:
+- bins=10: broj intervala
+- alpha=0.7: prozirnost
+- density=True: da bude gustina umesto frekvencije
+
+------------------------------------------------------
+
+6. BOX PLOT – kind='box'
+-------------------------
+✔️ Prikazuje medijanu, kvartile, outliere
+✔️ Idealno za otkrivanje ekstremnih vrednosti
+
+------------------------------------------------------
+
+7. AREA PLOT – kind='area'
+---------------------------
+✔️ Površina ispod linije – kumulativne vrednosti
+✔️ Npr: prikaz udela kroz vreme
+
+🔧 Parametri:
+- stacked=True/False
+- alpha=0.4
+
+------------------------------------------------------
+
+8. SCATTER PLOT – kind='scatter'
+--------------------------------
+✔️ Odnos između 2 numeričke promenljive
+✔️ Npr: visina vs težina
+
+🔧 Parametri:
+- x='kolona1', y='kolona2'
+- c='kolona3' (boja po trećoj vrednosti)
+- s=100 (veličina tačke)
+
+✔️ Moraš navesti x i y!
+
+------------------------------------------------------
+
+9. KDE PLOT – kind='kde'
+-------------------------
+✔️ Glatka procena gustine (alternativa histogramu)
+✔️ Npr: oblik raspodele, skew/kurtosis
+
+------------------------------------------------------
+
+10. HEXBIN PLOT – kind='hexbin'
+-------------------------------
+✔️ Za velike količine podataka, gustina u 2D prostoru
+✔️ Bolja alternativa scatter plotu za mnogo tačaka
+
+🔧 Parametri:
+- x='kolona1', y='kolona2'
+- gridsize=25
+- cmap='viridis'
+
+------------------------------------------------------
+
+🧠 KADA KOJI PLOT?
+==================
+
+| Tip grafa   | Kada koristiti                                         |
+|-------------|---------------------------------------------------------|
+| line        | Trend kroz vreme, vremenske serije                     |
+| bar/barh    | Kategorijsko poređenje                                 |
+| pie         | Udeo u ukupnoj celini                                  |
+| hist        | Raspodela frekvencija                                  |
+| kde         | Glatka raspodela, analiza forme distribucije           |
+| scatter     | Odnos 2 promenljive, korelacija                        |
+| box         | Raspodela i outlieri                                   |
+| area        | Kumulativne vrednosti                                 |
+| hexbin      | Gustina velikog broja tačaka                           |
+
+------------------------------------------------------
+
+📌 BONUS: ČESTI GLOBALNI PARAMETRI
+==================================
+
+- figsize=(10,5)           → veličina grafika
+- title="..."              → naslov
+- xlabel="...", ylabel="..." → opisi osa
+- grid=True                → mreža
+- legend=True              → prikaz legende
+- rot=45                   → rotacija x-ose
+
+======================================================
+
