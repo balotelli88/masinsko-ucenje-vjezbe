@@ -1,0 +1,5 @@
+numericke = df.select_dtypes(include=['int64', 'float64'])
+df[numericke.columns] = StandardScaler().fit_transform(numericke)
+
+df["kolona"].fillna(df["kolona"].mode()[0])
+#najcesca vrednost
